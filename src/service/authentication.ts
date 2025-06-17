@@ -20,7 +20,7 @@ export const login = async (req: express.Request, res:express.Response) => {
             res.status(403).json({error: 'Invalid password.'});
             return;
         }
-
+   
         const salt = random(); // if login successful make a new session token and store it 
         user.authentication.sessionToken = authentication(salt, user._id.toString());
 

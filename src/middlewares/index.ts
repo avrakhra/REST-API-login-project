@@ -1,6 +1,7 @@
 import express from 'express';
 import { get, merge } from 'lodash';
-import { getUserBySessionToken } from '../db/users';
+import { getUserByEmail, getUserBySessionToken } from '../db/users';
+import { authentication } from '../helpers';
 
 export const isOwner = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
@@ -24,26 +25,33 @@ export const isOwner = async (req: express.Request, res: express.Response, next:
  
 export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-        const sessionToken = req.cookies['AVLEEN-AUTH'];
-        if (!sessionToken) {
-            res.sendStatus(403);
+        
+        const authHeader = req.headers.authorization; //gets the authorization header
+        const encodedString = authHeader.split(' ')[1]; // this gets the part of the header after the word "Basic"
+        const decodedString = Buffer.from(encodedString, 'base64').toString('utf-8'); // this decodes the base64 string into email:password format
+        const [email, password] = decodedString.split(':'); // splits the string into email andd password
+        
+        const user = await getUserByEmail(email).select('+authentication.salt +authentication.password'); // find the user by email including the password and salt fields
+        if (!user) {
+        res.status(400).json({error: 'User not found.'});
+            return;
+        }
+        
+        const expectedHash = authentication(user.authentication.salt, password); // hashing given password
+        if (user.authentication.password != expectedHash) {
+            res.status(403).json({error: 'Invalid password.'});
             return;
         }
 
-        const existingUser = await getUserBySessionToken(sessionToken);
+        merge(req, { identity: user });
 
-        if (!existingUser) {
-            res.sendStatus(400);
-            return;
-        }
+        next();
 
-        merge(req, { identity: existingUser });
-
-        return next();
+        return;
 
     } catch (error) {
         console.log(error);
-        res.sendStatus(400);
+        res.sendStatus(400).json({ error: "Unexpected error in isAuthenticated."});
         return;
     }
 }

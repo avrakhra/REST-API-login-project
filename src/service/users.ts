@@ -1,4 +1,5 @@
 import express from 'express';
+import { authentication, random } from '../helpers';
 
 import { deleteUserById, getUserById, getUsers } from '../db/users';
 
@@ -32,19 +33,30 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
 
 export const updateUser = async (req: express.Request, res:express.Response) => {
     try {
-        const {id} = req.params;
-        const {username} = req.body;
-        if (!username) {
-            res.sendStatus(400);
+        const { id } = req.params;
+        const { username, email, password } = req.body;
+        const user = await getUserById(id);
+        if (!user) {
+            res.status(404).json({ error: "User not found." });
             return;
         }
-        const user = await getUserById(id);
-        user.username = username;
+        if (username) {
+            user.username = username;
+        }
+        if (email) {
+            user.email = email;
+        }
+        if (password) {
+            const newSalt = random();
+            const newHash = authentication(newSalt, password);
+            user.authentication.salt = newSalt;
+            user.authentication.password = newHash;
+        }
         await user.save();
         res.status(200).json(user).end();
     } catch (error) {
         console.log(error);
-        res.sendStatus(400);
+        res.status(400).json("Unexpected error.");
         return;
     }
 }
