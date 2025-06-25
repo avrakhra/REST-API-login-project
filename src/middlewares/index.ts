@@ -27,17 +27,18 @@ export const isAuthenticated = async (req: express.Request, res: express.Respons
     try {
         
         const authHeader = req.headers.authorization; //gets the authorization header
-        const encodedString = authHeader.split(' ')[1]; // this gets the part of the header after the word "Basic"
-        const decodedString = Buffer.from(encodedString, 'base64').toString('utf-8'); // this decodes the base64 string into email:password format
+        const encodedString = authHeader.split(' ')[1]; //  gets the Base64 string after the word "Basic"
+        const decodedString = Buffer.from(encodedString, 'base64').toString('utf-8'); //  decodes the base64 string into the format of email:password 
         const [email, password] = decodedString.split(':'); // splits the string into email andd password
         
-        const user = await getUserByEmail(email).select('+authentication.salt +authentication.password'); // find the user by email including the password and salt fields
+        const user = await getUserByEmail(email).select('+authentication.salt +authentication.password'); // gets the user and auth info
+       
         if (!user) {
         res.status(400).json({error: 'User not found.'});
             return;
         }
         
-        const expectedHash = authentication(user.authentication.salt, password); // hashing given password
+        const expectedHash = authentication(user.authentication.salt, password); // hashes given password
         if (user.authentication.password != expectedHash) {
             res.status(403).json({error: 'Invalid password.'});
             return;

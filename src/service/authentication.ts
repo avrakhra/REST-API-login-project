@@ -22,11 +22,13 @@ export const login = async (req: express.Request, res:express.Response) => {
         }
    
         const salt = random(); // if login successful make a new session token and store it 
-        user.authentication.sessionToken = authentication(salt, user._id.toString());
+        const sessionToken = authentication(salt, user._id.toString()); //generate session token (Bearer)
+        user.authentication.sessionToken = sessionToken; //save token
+ 
+        await user.save(); // save updated user
 
-        await user.save();
-
-        res.status(200).json(user).end();
+        res.status(200).json({ token: sessionToken }); 
+        
         return;
 
     } catch (error) {
@@ -59,7 +61,7 @@ export const register = async (req: express.Request, res: express.Response) => {
 
         const specialChar = password.includes('!') || password.includes('@') || password.includes('#') || password.includes('$') || password.includes('%') || password.includes('&');
         if (password.length < 8 || !specialChar) {
-            res.status(400).json({ error: "Passsword must be at least 8 characters and contain a speical character."});
+            res.status(400).json({ error: "Passsword must be at least 8 characters and contain a special character."});
             return;
         }
 
