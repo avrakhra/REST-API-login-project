@@ -27,32 +27,27 @@ export const isAuthenticated = async (req: express.Request, res: express.Respons
     try {
         
         const authHeader = req.headers.authorization; //gets the authorization header
-        const encodedString = authHeader.split(' ')[1]; //  gets the Base64 string after the word "Basic"
-        const decodedString = Buffer.from(encodedString, 'base64').toString('utf-8'); //  decodes the base64 string into the format of email:password 
-        const [email, password] = decodedString.split(':'); // splits the string into email andd password
-        
-        const user = await getUserByEmail(email).select('+authentication.salt +authentication.password'); // gets the user and auth info
-       
-        if (!user) {
-        res.status(400).json({error: 'User not found.'});
+        if (!authHeader) { //checks if header is missing
+            res.status(403).json({error : 'Missing or invalid header'});
             return;
         }
-        
-        const expectedHash = authentication(user.authentication.salt, password); // hashes given password
-        if (user.authentication.password != expectedHash) {
-            res.status(403).json({error: 'Invalid password.'});
+
+        const token = authHeader.split(' ')[1]; //extracts the token string after "Bearer "
+        const user = await getUserBySessionToken(token) //looks up user by token
+       
+        if (!user) { // if there is no user with that token they are unauthorized
+        res.status(404).json({error: 'User not found.'});
             return;
         }
 
         merge(req, { identity: user });
-
         next();
-
         return;
 
     } catch (error) {
         console.log(error);
-        res.sendStatus(400).json({ error: "Unexpected error in isAuthenticated."});
+        res.status(400).json({ error: "Unexpected error in isAuthenticated."});
         return;
     }
+
 }
