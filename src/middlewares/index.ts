@@ -32,14 +32,24 @@ export const isAuthenticated = async (req: express.Request, res: express.Respons
             return;
         }
 
-        const token = authHeader.split(' ')[1]; //extracts the token string after "Bearer "
-        const user = await getUserBySessionToken(token) //looks up user by token
-       
-        if (!user) { // if there is no user with that token they are unauthorized
-        res.status(404).json({error: 'User not found.'});
+        const token = authHeader.split(' ')[1]; // extracts the token string after "Bearer "
+        const user = await getUserBySessionToken(token).select('+authentication.tokenCreatedAt') //looks up user by token
+        
+         if (!user) { // if there is no user with that token they are unauthorized
+            res.status(404).json({error: 'User not found.'});
             return;
         }
+        
+        const tokenCreatedAt = new Date(user.authentication.tokenCreatedAt).getTime(); // convert to timestamp
+        const timeNow = Date.now();
+        const tokenAge = timeNow - tokenCreatedAt; // token age in milliseconds
+        const maxAge = 30 * 60 * 1000; // maximum milliseconds a token can be valid (30 minutes)
 
+        if (tokenAge > maxAge) {
+            res.status(401).json({ error: 'Session expired. Please log in again. '});
+            return;
+        }
+       
         merge(req, { identity: user });
         next();
         return;

@@ -1,10 +1,10 @@
 
 import express from 'express';
 import { getUserByEmail, getUserByUsername, createUser } from '../db/users';
-import { random, authentication, } from '../helpers';
+import { random, authentication, formatPhoneNumber, } from '../helpers';
 export const login = async (req: express.Request, res:express.Response) => {
     try {
-        const authHeader = req.headers.authorization; //written as "Authorization: Basic base64(email:password)"
+        const authHeader = req.headers.authorization; // written as "Authorization: Basic base64(email:password)"
         const encodedString = authHeader.split(' ')[1]; // this gets the part of the header after the word "Basic"
         const decodedString = Buffer.from(encodedString, 'base64').toString('utf-8'); // this decodes the base64 string into email:password format
         const [email, password] = decodedString.split(':'); // splits the string into email andd password
@@ -23,12 +23,13 @@ export const login = async (req: express.Request, res:express.Response) => {
    
         const salt = random(); // if login successful make a new session token and store it 
         const sessionToken = authentication(salt, user._id.toString()); //generate session token (Bearer)
-        user.authentication.sessionToken = sessionToken; //save token
+        user.authentication.sessionToken = sessionToken; // save token
+        user.authentication.tokenCreatedAt = new Date(); // save current time as token creation time
  
         await user.save(); // save updated user
 
-        res.status(200).json({ token: sessionToken }); 
-        
+        const localTimeString = new Date(user.authentication.tokenCreatedAt).toLocaleString('en-US', { timeZone: 'America/Chicago', });
+        res.status(200).json({ token: user.authentication.sessionToken , message: 'Token created at ' + localTimeString + '. It will expire in 30 minutes.' });
         return;
 
     } catch (error) {
@@ -41,9 +42,9 @@ export const login = async (req: express.Request, res:express.Response) => {
 
 export const register = async (req: express.Request, res: express.Response) => {
     try { 
-        const { email, password, username }  = req.body;
-        if (!email || !password || !username) {
-            res.sendStatus(400);
+        const { email, password, username, phoneNumber, address, city, zip }  = req.body;
+        if (!email || !password || !username || !phoneNumber || !address || !city || !zip) {
+            res.status(400).json({ error: 'Missing required fields. Please provide email, password, username, address, city, zip, and phone number.'});
             return;
         }
 
@@ -64,11 +65,14 @@ export const register = async (req: express.Request, res: express.Response) => {
             res.status(400).json({ error: "Passsword must be at least 8 characters and contain a special character."});
             return;
         }
-
         const salt = random();
         const user = await createUser({
             email, 
-            username, 
+            username,
+            phoneNumber: formatPhoneNumber(phoneNumber),
+            address,
+            city, 
+            zip,
             authentication: {
                 salt, 
                 password: authentication(salt, password),

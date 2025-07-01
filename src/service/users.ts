@@ -1,5 +1,5 @@
 import express from 'express';
-import { authentication, random } from '../helpers';
+import { authentication, formatPhoneNumber, random } from '../helpers';
 import { deleteUserById, getUserById, getUserBySessionToken, getUsers } from '../db/users';
 
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
@@ -14,10 +14,25 @@ export const getAllUsers = async (req: express.Request, res: express.Response) =
     }
 };
 
+export const getPublicUserInfo = async (req: express.Request, res: express.Response) => {
+    try {
+        const users = await getUsers();
+        const publicInfo = users.map(user => ({ 
+            email: user.email,
+            zip: user.zip,
+        }));
+        res.status(200).json(publicInfo);
+        return;
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ error: 'Failed to fetch public user info.' });
+        return;
+    }
+};
+
 export const deleteUser = async (req: express.Request, res: express.Response) => {
     try {
         const authHeader = req.headers.authorization;
-
         const token = authHeader.split(' ')[1];
         const user = await getUserBySessionToken(token);
         
@@ -58,28 +73,47 @@ export const updateUser = async (req: express.Request, res:express.Response) => 
             return;
         }
 
-        const { username, email, password } = req.body;
-        
+        const { username, email, password, phoneNumber, address, city, zip } = req.body;
+
         if (username) {
             user.username = username;
         }
+
         if (email) {
             user.email = email;
         }
+
         if (password) {
             const newSalt = random();
             const newHash = authentication(newSalt, password);
             user.authentication.salt = newSalt;
             user.authentication.password = newHash;
         }
+
+        if (phoneNumber) {
+            user.phoneNumber = formatPhoneNumber(phoneNumber);
+        }
+
+        if (address) {
+            user.address = address;
+        }
+
+        if (city) {
+            user.city = city;
+        }
+
+        if (zip) {
+            user.zip = zip;
+        }
+
         await user.save();
 
         res.status(200).json(user).end();
 
     } catch (error) {
-
         console.log(error);
         res.status(400).json("Unexpected error.");
         return;
     }
 }
+
