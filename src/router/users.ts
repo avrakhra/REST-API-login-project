@@ -2,7 +2,7 @@ import express from 'express';
 
 import { getAllUsers, getPublicUserInfo, deleteUser, updateUser, updateUserAllFields } from '../service/users';
 
-import { isAuthenticated, isOwner } from '../middlewares';
+import { isAuthenticated } from '../middlewares';
 
 export default (router: express.Router) => {
     router.get('/public-users', getPublicUserInfo);

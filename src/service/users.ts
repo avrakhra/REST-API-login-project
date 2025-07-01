@@ -1,6 +1,6 @@
 import express from 'express';
 import { authentication, formatPhoneNumber, random } from '../helpers';
-import { deleteUserById, getUserById, getUserBySessionToken, getUsers } from '../db/users';
+import { deleteUserById, getUserByEmail, getUserById, getUserBySessionToken, getUserByUsername, getUsers } from '../db/users';
 
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
     try {
@@ -48,7 +48,7 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
             return;
         }
 
-        res.status(200).json(deletedUser).end();
+        res.status(200).json({ message: 'Successfully deleted user. '}) ;
 
     } catch (error) {
         console.log(error);
@@ -61,7 +61,7 @@ export const updateUser = async (req: express.Request, res:express.Response) => 
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            res.status(403).json({error: 'Missing or invalid auth header'});
+            res.status(403).json({error: 'Missing or invalid auth header.'});
             return;
         }
         
@@ -74,12 +74,25 @@ export const updateUser = async (req: express.Request, res:express.Response) => 
         }
 
         const { username, email, password, phoneNumber, address, city, zip } = req.body;
-
         if (username) {
+            if (username != user.username) {
+                const existingUser = await getUserByUsername(username);
+                if (existingUser) {
+                    res.status(409).json({ error: 'Username already taken.'});
+                    return;
+                }
+            }
             user.username = username;
         }
 
         if (email) {
+            if (email != user.email) {
+                const existingUser = await getUserByEmail(email);
+                if (existingUser) {
+                    res.status(409).json({ error: 'Email already in use.'});
+                    return;
+                }
+            }
             user.email = email;
         }
 
@@ -138,6 +151,22 @@ export const updateUserAllFields = async (req: express.Request, res:express.Resp
         if (!email || !password || !username || !phoneNumber || !address || !city || !zip) {
             res.status(400).json({ error: 'All fields required. Please provide email, password, username, address, city, zip, and phone number.'});
             return;
+        }
+
+        if (username != user.username) {
+            const existingUser = await getUserByUsername(username);
+            if (existingUser) {
+                res.status(409).json({ error: 'Username already taken.'});
+                return;
+            }
+        }
+
+        if (email != user.email) {
+            const existingUser = await getUserByEmail(email);
+            if (existingUser) {
+                res.status(409).json({ error: 'Email already in use.'});
+                return;
+            }
         }
 
         user.username = username;

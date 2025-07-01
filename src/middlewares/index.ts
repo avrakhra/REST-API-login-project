@@ -3,26 +3,6 @@ import { get, merge } from 'lodash';
 import { getUserByEmail, getUserBySessionToken } from '../db/users';
 import { authentication } from '../helpers';
 
-export const isOwner = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    try {
-        const { id } = req.params;
-        const currentUserId = get(req, 'identity._id') as string; 
-        if (!currentUserId) {
-            res.sendStatus(403);
-            return;
-        }
-        if (currentUserId.toString() != id) {
-            res.sendStatus(403);
-            return;
-        }
-        next();
-    } catch (error) {
-        console.log(error);
-        res.sendStatus(400);
-        return;
-    }
-}
- 
 export const isAuthenticated = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
         
@@ -59,5 +39,25 @@ export const isAuthenticated = async (req: express.Request, res: express.Respons
         res.status(400).json({ error: "Unexpected error in isAuthenticated."});
         return;
     }
+
+/* export const isOwner = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const { id } = req.params;
+        const currentUserId = get(req, 'identity._id') as string; 
+        if (!currentUserId) {
+            res.sendStatus(403);
+            return;
+        }
+        if (currentUserId.toString() != id) {
+            res.sendStatus(403);
+            return;
+        }
+        next();
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+        return;
+    }
+} */ 
 
 }
