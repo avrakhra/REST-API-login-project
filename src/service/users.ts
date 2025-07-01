@@ -117,3 +117,48 @@ export const updateUser = async (req: express.Request, res:express.Response) => 
     }
 }
 
+export const updateUserAllFields = async (req: express.Request, res:express.Response) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            res.status(403).json({error: 'Missing or invalid auth header'});
+            return;
+        }
+        
+        const token = authHeader.split(' ')[1];
+        const user = await getUserBySessionToken(token);
+        
+        if (!user) {
+            res.status(404).json({ error: 'User not found.' });
+            return;
+        }
+
+        const { username, email, password, phoneNumber, address, city, zip } = req.body;
+
+        if (!email || !password || !username || !phoneNumber || !address || !city || !zip) {
+            res.status(400).json({ error: 'All fields required. Please provide email, password, username, address, city, zip, and phone number.'});
+            return;
+        }
+
+        user.username = username;
+        user.email = email;
+        user.phoneNumber = formatPhoneNumber(phoneNumber);
+        user.address = address;
+        user.city = city;
+        user.zip = zip;
+
+        const newSalt = random();
+        const newHash = authentication(newSalt, password);
+        user.authentication.salt = newSalt;
+        user.authentication.password = newHash;
+        
+        await user.save();
+
+        res.status(200).json({ message: 'User fully updated.', user });
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).json('Unexpected error.');
+        return;
+    }
+}
