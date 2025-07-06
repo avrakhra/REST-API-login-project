@@ -1,10 +1,11 @@
 import express from 'express';
 import { authentication, formatPhoneNumber, random } from '../helpers';
-import { deleteUserById, getUserByEmail, getUserById, getUserBySessionToken, getUserByUsername, getUsers } from '../db/users';
+import { deleteUserById, getUserByEmail, getUserById, getUserBySessionToken, getUserByUsername } from '../db/users';
+import { UserAuthModel, UserPublicModel } from '../db/userModels';
 
 export const getAllUsers = async (req: express.Request, res: express.Response) => {
     try {
-        const users = await getUsers();
+        const users = await UserAuthModel.find().select('-__v -authentication.password -authentication.salt -authentication.sessionToken');
         res.status(200).json(users);
         return;
     } catch (error) {
@@ -16,12 +17,8 @@ export const getAllUsers = async (req: express.Request, res: express.Response) =
 
 export const getPublicUserInfo = async (req: express.Request, res: express.Response) => {
     try {
-        const users = await getUsers();
-        const publicInfo = users.map(user => ({ 
-            email: user.email,
-            zip: user.zip,
-        }));
-        res.status(200).json(publicInfo);
+        const users = await UserPublicModel.find().select('email zip -_id');
+        res.status(200).json(users);
         return;
     } catch (error) {
         console.log(error);
@@ -52,7 +49,7 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
 
     } catch (error) {
         console.log(error);
-        res.status(400).json({error: 'Unexpected error.'});
+        res.status(400).json({ error: 'Unexpected error.' });
         return;
     }
 }
@@ -61,7 +58,7 @@ export const updateUser = async (req: express.Request, res:express.Response) => 
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            res.status(403).json({error: 'Missing or invalid auth header.'});
+            res.status(403).json({ error: 'Missing or invalid auth header.' });
             return;
         }
         

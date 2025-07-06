@@ -1,28 +1,12 @@
-import mongoose from 'mongoose';
+import { UserAuthModel, UserPublicModel } from '../db/userModels';
 
-const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true },
-    email: { type: String, required: true }, 
-    phoneNumber: { type: String, required: true },
-    address: { type: String, required: true },
-    city: { type: String, required: true }, 
-    zip: { type: String, required: true }, 
-    authentication: {
-        password: { type: String, required: true, select: false }, 
-        salt : {type: String, select: false }, 
-        sessionToken: {type: String, select: false },
-        tokenCreatedAt: { type: Date, select: false},
-    },
-});
-
-export const UserModel = mongoose.model('User', UserSchema);
-export const getUsers = () => UserModel.find();
-export const getUserByEmail = (email:string) => UserModel.findOne({email});
-export const getUserByUsername = (username:string) => UserModel.findOne({username});
-export const getUserBySessionToken = (sessionToken: string) => UserModel.findOne({
+export const getPublicUsers = () => UserPublicModel.find();
+export const getUserByEmail = (email:string) => UserAuthModel.findOne({email});
+export const getUserByUsername = (username:string) => UserAuthModel.findOne({username});
+export const getUserBySessionToken = (sessionToken: string) => UserAuthModel.findOne({
     'authentication.sessionToken': sessionToken,});
-export const getUserById = (id: string) => UserModel.findById(id);
-export const createUser = (values: Record<string, any>) => new UserModel(values)
+export const getUserById = (id: string) => UserAuthModel.findById(id);
+export const createUser = (values: Record<string, any>) => new UserAuthModel(values)
     .save().then((user) => user.toObject());
-export const deleteUserById = (id: string) => UserModel.findOneAndDelete({_id: id});
-export const updateUserById = (id: string, values: Record<string, any>) => UserModel.findByIdAndUpdate(id, values);
+export const deleteUserById = (id: string) => UserAuthModel.findOneAndDelete({_id: id});
+export const updateUserById = (id: string, values: Record<string, any>) => UserAuthModel.findByIdAndUpdate(id, values);
