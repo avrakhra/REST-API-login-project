@@ -12,8 +12,9 @@ function Login() {
   }
 
   return (
-      <div>
-        <h1>Log in</h1>
+      <div className="container">
+        <div className= "login-box">
+        <h1>LOG IN</h1>
         <form onSubmit={handleSubmit} className="login-form">
             <label>Email:</label>
             <input
@@ -30,13 +31,16 @@ function Login() {
                 required
             />
             <br />
+            <br />
             <button type='submit'>Log In</button>
+            <br />
             <div className="links">
                 <a href='#'>Forgot Password?</a>
                 <a href='#'>Need an Account?</a>
             </div>
         </form>
-    </div>
+      </div>
+  </div>
   );
 }
 

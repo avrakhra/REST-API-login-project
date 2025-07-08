@@ -17,8 +17,9 @@ function Register() {
   }
 
   return (
-      <div>
-        <h1>Register Your Account</h1>
+    <div className="container">
+      <div className="register-page">
+        <h1>REGISTER YOUR ACCOUNT</h1>
         <p> * Password must be at least 8 characters and contain a special character. </p>
         <form onSubmit={handleSubmit}>
             <label>Username:</label>
@@ -31,6 +32,7 @@ function Register() {
             />
             
             <br />
+            <br />
             <label>Email:</label>
             <br />
             <input
@@ -40,6 +42,7 @@ function Register() {
                 required
             />
 
+            <br />
             <br />
             <label>Password:</label>
             <br />
@@ -51,6 +54,8 @@ function Register() {
             />
 
             <br />
+            <br />
+            
             <label>PhoneNumber:</label>
             <br />
             <input
@@ -60,6 +65,7 @@ function Register() {
                 required
             />
 
+            <br />
             <br />
             <label>Address:</label>
             <br />
@@ -71,6 +77,7 @@ function Register() {
             />
 
             <br />
+            <br />
             <label>City:</label>
             <br />
             <input
@@ -81,6 +88,7 @@ function Register() {
             />
 
             <br />
+            <br />
             <label>Zip:</label>
             <br />
             <input
@@ -90,12 +98,15 @@ function Register() {
                 required
             />
 
+            <br />
+            <br />
             <button type='submit'>Sign Up</button>
 
             <div className="links">
                 <a href='#'>Already have an account?</a>
             </div>
         </form>
+    </div>
     </div>
   );
 }
