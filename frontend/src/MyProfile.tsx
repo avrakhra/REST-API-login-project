@@ -17,6 +17,7 @@ function MyProfile() {
   }
 
   return (
+    <div className='container'>
       <div>
         <h1>My Profile</h1>
         <p> * Password must be at least 8 characters and contain a special character. </p>
@@ -97,6 +98,7 @@ function MyProfile() {
             </div>
         </form>
     </div>
+</div>
   );
 }
 

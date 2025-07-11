@@ -11,7 +11,8 @@ function ForgotPassword() {
   }
 
   return (
-      <div>
+      <div className="container">
+        <div>
         <h1>Forgot Your Password</h1>
         <form onSubmit={handleSubmit} className="login-form">
             <label>Old Password:</label>
@@ -28,9 +29,12 @@ function ForgotPassword() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
             />
+            <br />
+            <br />
             <button type='submit'>Reset Password</button>
         </form>
     </div>
+  </div>
   );
 }
 

@@ -20,7 +20,7 @@ p {
     font-size: 1rem;
     text-align: center;
     color: aliceblue;
-    text-shadow: 5px 5px #2e233b;
+    text-shadow: 2.5px 2.5px #2e233b;
 }
 
 label {
@@ -29,13 +29,14 @@ label {
     margin-bottom: 4px;
     font-weight: bold;
     color: aliceblue;
+    text-shadow: 2.5px 2.5px #2e233b;
 }
 
 input {
     font-size: 1.6rem;
     width: 100%;
     padding: 8px;
-    box-shadow: 5px 5px 5px #2e233b;
+    box-shadow: 2.5px 2.5px 2.5px #2e233b;
 }
 
 button {
