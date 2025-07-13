@@ -5,6 +5,12 @@ import { random, authentication, formatPhoneNumber, } from '../helpers';
 export const login = async (req: express.Request, res:express.Response) => {
     try {
         const authHeader = req.headers.authorization; // written as "Authorization: Basic base64(email:password)"
+        
+        if (!authHeader) {
+            res.status(401).json({error: 'Authorization header missing.'});
+            return;
+        }
+
         const encodedString = authHeader.split(' ')[1]; // this gets the part of the header after the word "Basic"
         const decodedString = Buffer.from(encodedString, 'base64').toString('utf-8'); // this decodes the base64 string into email:password format
         const [email, password] = decodedString.split(':'); // splits the string into email andd password

@@ -1,12 +1,12 @@
 import express from 'express';
 import http from 'http';
-import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
 import mongoose, { Schema } from 'mongoose';
 import router from './router';
 import dotenv from 'dotenv';
+//import bodyParser from 'body-parser';
 
 dotenv.config();
 
@@ -18,12 +18,12 @@ app.use(cors({
 
 app.use(compression());
 app.use(cookieParser());
-app.use(bodyParser.json());
+app.use(express.json());
 
 const server = http.createServer(app);
 
-server.listen(8080, () => {
-    console.log('Server running on http://localhost:8080/');
+server.listen(process.env.PORT, () => {
+    console.log(`Server running on http://localhost:${process.env.PORT}`);
 });
 
 const MONGO_URL = process.env.MONGO_URL!

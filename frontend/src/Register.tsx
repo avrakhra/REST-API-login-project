@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './Register.css'
 
 function Register() {
-// Single state object for all form fields
+// single state object for all form fields
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -10,11 +10,40 @@ function Register() {
   const [city, setCity] = useState('');
   const [zip, setZip] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState<string>('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert('Registering with username: ${username}');
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // stops the browser from submitting the form and reloading the page
+    const data = { 
+        email,
+        password,
+        username,
+        phoneNumber, 
+        address, 
+        city,
+        zip
+    }; // gathers all the form field values into a single data object
+    try {
+        // sends a POST request to the backend at /auth/register
+        const response = await fetch('http://localhost:8080/auth/register', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, // tells the backend we're sending JSON data
+            body: JSON.stringify(data), // converts JS object into a JSON string before sending
+        });
+
+        console.log('Data sent: ', data);
+        const result = await response.json();
+
+        if (response.ok) {
+            setMessage(`Registration successful! Welcome ${username}.`);
+        } else {
+            setMessage(result.error);
+        }
+    } catch (error) {
+        console.error('error', error);
+        setMessage('Something went wrong. Please try again.');
+    }
+  };
 
   return (
     <div className="container">
@@ -36,7 +65,7 @@ function Register() {
             <label>Email:</label>
             <br />
             <input
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -100,11 +129,17 @@ function Register() {
 
             <br />
             <br />
+            <br />
+        
             <button type='submit'>Sign Up</button>
 
             <div className="links">
                 <a href='#'>Already have an account?</a>
             </div>
+
+            <br />
+            <p>{message}</p>
+            
         </form>
     </div>
     </div>

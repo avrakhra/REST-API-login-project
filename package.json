@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon",
+    "start": "nodemon src/index.ts",
+    "server": "nodemon src/index.ts",
+    "client": "npm run dev --prefix frontend", 
+    "dev": "concurrently \"npm run server\" \"npm run client\"", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -26,6 +29,7 @@
   "dependencies": {
     "body-parser": "^2.2.0",
     "compression": "^1.8.0",
+    "concurrently": "^9.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.0.1",

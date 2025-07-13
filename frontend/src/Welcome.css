@@ -1,0 +1,36 @@
+body {
+    background-color: #523E67;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+}
+
+h1 {
+    font-size: 10rem;
+    text-align: center;
+    color: aliceblue;
+    text-shadow: 5px 5px #2e233b;
+}
+
+p {
+    font-size: 2rem;
+    text-align: center;
+    color: aliceblue;
+    text-shadow: 2.7px 2.7px #2e233b;
+}
+
+.links a {
+    font-size: 2rem;
+    color: aliceblue;
+    margin: 15px;
+    text-decoration: underline;
+    position: relative;
+    left: 1250px;
+    bottom: 140px;
+    padding: 15px;
+    text-shadow: 3.5px 3.5px #2e233b;
+}

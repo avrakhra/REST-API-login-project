@@ -17,7 +17,7 @@ h1 {
 }
 
 p {
-    font-size: 1rem;
+    font-size: 2rem;
     text-align: center;
     color: aliceblue;
     text-shadow: 2.5px 2.5px #2e233b;
@@ -44,6 +44,7 @@ button {
     width: 102%;
     padding: 10px;
     box-shadow: 5px 5px 5px #2e233b;
+    margin-bottom: 17px;
 }
 
 .links a {
