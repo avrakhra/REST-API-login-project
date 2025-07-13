@@ -1,6 +1,8 @@
 body {
     background-color: #523E67;
+    margin: 0;
 }
+
 
 .container {
     display: flex;
@@ -10,39 +12,76 @@ body {
     width: 190vh;
 }
 
+.login-box {
+    width: 600px;
+    text-align: center;
+}
+
 h1 {
-    font-size: 5.5rem;
+    font-size: 7.5rem;
     text-align: center;
     color: aliceblue;
     text-shadow: 5px 5px #2e233b;
+    position: relative;
+    top: 30px;
 }
 
-label {
-    font-size: 1.6rem;
+.email {
+    font-size: 2rem;
     display: block;
     margin-bottom: 4px;
     font-weight: bold;
     color: aliceblue;
-    
+    position: relative;
+    right: 250px;
+}
+
+.password {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: aliceblue;
+    position: relative;
+    right: 220px;
 }
 
 input {
-    font-size: 2rem;
-    width: 100%;
+    font-size: 3rem;
+    width: 600px;
     padding: 8px;
     box-shadow: 5px 5px 5px #2e233b;
+    margin-bottom: 7px;
+    overflow: hidden;
 }
+
+p {
+    min-width: 70%;
+    max-width: 70%;
+    font-size: 2rem;
+    white-space: normal;
+    overflow-wrap: break-word;
+    color: aliceblue;
+    text-shadow: 3px 3px #2e233b;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 5px;
+}
+
 
 button {
     font-size: 1.5rem;
-    width: 108%;
+    width: 620px;
     padding: 10px;
     box-shadow: 5px 5px 5px #2e233b;
+    margin-bottom: 9px;
 }
 
 .links a {
-    font-size: 1.4rem;
+    font-size: 1.7rem;
     color: aliceblue;
     margin: 15px;
     text-decoration: underline;
+    padding: 21px;
+    text-align: center;
 }
